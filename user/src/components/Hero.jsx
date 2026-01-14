@@ -18,7 +18,7 @@ const Hero = () => {
             <div className="relative flex flex-col items-center justify-center text-sm px-4 md:px-16 lg:px-24 xl:px-40 text-gray-800">
 
                 {/* Avatars + Stars */}
-                <div className="flex items-center mt-24 md:mt-36">
+                <div className="flex items-center mt-16 md:mt-18">
                     <div className="flex -space-x-3 pr-3">
                         <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200" alt="user3" className="size-8 object-cover rounded-full border-2 border-white hover:-translate-y-0.5 transition z-[1]" />
                         <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200" alt="user1" className="size-8 object-cover rounded-full border-2 border-white hover:-translate-y-0.5 transition z-2" />
