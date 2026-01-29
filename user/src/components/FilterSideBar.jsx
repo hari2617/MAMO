@@ -1,7 +1,24 @@
 import { Filter, X } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
+import { useNavigate, useSearchParams} from 'react-router-dom'
 
 const FilterSideBar = ({mobileScreen,setMobileScreen}) => {
+
+    const navigate=useNavigate();
+
+    const[typeValue,setTypeValue] =useSearchParams();
+    const[searchValue,setSearchValue] = useState(typeValue.get("search")||"");
+
+   const onChangeHandle =(e)=>{
+
+    if(e.target.value){
+        setSearchValue(e.target.value);
+        setTypeValue({search:e.target.value})
+    }else{
+        navigate("/marketplace");
+        setSearchValue("");
+    }
+   }
   return (
     <div className={`${mobileScreen ? "max-sm:fixed" : "max-sm:hidden"}  z-100 max-sm:h-screen max-sm:inset-0 max-sm:overflow-scroll bg-white rounded-lg  md:min-w-[300px] shadow-sm border border-gray-200 h-fit sticky top-24`}>
         <div className='border border-gray-200  p-4'>
@@ -18,7 +35,17 @@ const FilterSideBar = ({mobileScreen,setMobileScreen}) => {
 
                 </div>
             </div>
+
+            
         </div>
+
+        <div className='p-4 space-y-6 sm:max-h-[calc(100vh-200px)] overflow-y-scrollno-scrollbar'>
+                
+                {/* search bar*/}
+                <div className='flex justify-between items-center'>
+                    <input type="text" placeholder='Search Platforms like instagram, etc.' className='w-full border border-gray-500 px-3 py-2 text-black outline-indigo-500 rounded-md text-sm' onChange={onChangeHandle} value={searchValue}/>
+                </div>
+            </div>
     </div>
   )
 }
