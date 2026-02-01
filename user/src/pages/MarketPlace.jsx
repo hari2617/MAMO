@@ -10,7 +10,17 @@ const MarketPlace = () => {
    const {listings } =useSelector(state=> state.listing)
    const [mobileScreen,setMobileScreen]=useState(false)
 
-   const filteresListing=listings.filter((listing)=>{return true})
+   const [filters,setFilters]=useState({
+      platform:null,
+      maxPrice:100000,
+      minFollwers:0,
+      niche:null,
+      verified:false,
+      monetized:null,
+   })
+
+  
+  const filteresListing=listings.filter((listing)=>{return true})
   const navigate=useNavigate()
   return (
     <div className='px-7 md:px-16  lg:px-24 xl:px-32' >
@@ -26,7 +36,7 @@ const MarketPlace = () => {
 
        <div className='flex relative gap-8 pb-8 items-start justify-between'>
           <div >
-            <FilterSideBar mobileScreen={mobileScreen} setMobileScreen={setMobileScreen}/>
+            <FilterSideBar mobileScreen={mobileScreen} setMobileScreen={setMobileScreen} filters={filters} setFilters={setFilters}/>
           </div>
           <div className='flex-1 gap-4 grid xl:grid-cols-2'>
                 {
