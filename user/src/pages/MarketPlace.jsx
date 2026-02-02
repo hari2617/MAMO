@@ -20,7 +20,36 @@ const MarketPlace = () => {
    })
 
   
-  const filteresListing=listings.filter((listing)=>{return true})
+  const filteresListing=listings.filter((listing)=>{
+
+    if(filters.platform&&filters.platform.length>0){
+          if(! filters.platform.includes(listing.platform)) return false;
+
+    }
+
+    if(filters.maxPrice){
+          if(listing.price>filters.maxPrice) return false;
+
+    }
+
+    if(filters.minFollwers){
+          if(listing.followers_count<filters.minFollwers) return false;
+
+    }
+
+
+    if(filters.niche&&filters.niche.length>0){
+      if(!filters.niche.includes(listing.niche)) return false;
+
+    }  
+    
+    if(filters.verified&& filters.verified!==listing.verified) return false;
+
+    if(filters.monetized&& filters.monetized!==listing.monetized) return false;
+
+    return true
+
+  })
   const navigate=useNavigate()
   return (
     <div className='px-7 md:px-16  lg:px-24 xl:px-32' >
