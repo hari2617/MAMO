@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import {ArrowLeftIcon,FilterIcon} from 'lucide-react'
 import {useSelector} from 'react-redux'
 import ListingCard from '../components/ListingCard';
 import FilterSideBar from '../components/FilterSideBar';
 
 const MarketPlace = () => {
+
+  const[searchParams]=useSearchParams();
+  const search=searchParams.get("search");
 
    const {listings } =useSelector(state=> state.listing)
    const [mobileScreen,setMobileScreen]=useState(false)
@@ -46,6 +49,16 @@ const MarketPlace = () => {
     if(filters.verified&& filters.verified!==listing.verified) return false;
 
     if(filters.monetized&& filters.monetized!==listing.monetized) return false;
+
+    if(search){
+      const trimed=search.trim();
+      if(!listing.title.toLowerCase().includes(trimed.toLowerCase())&&
+         !listing.platform.toLowerCase().includes(trimed.toLowerCase())&&
+         !listing.niche.toLowerCase().includes(trimed.toLowerCase())&&
+         !listing.username.toLowerCase().includes(trimed.toLowerCase())&&
+         !listing.description.toLowerCase().includes(trimed.toLowerCase())
+        ) return false
+    }
 
     return true
 
