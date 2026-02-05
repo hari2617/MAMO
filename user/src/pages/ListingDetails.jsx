@@ -20,6 +20,7 @@ const ListingDetails = () => {
   useEffect(()=>{
     const list=listings.find((listing)=>listing.id===listingId)
 
+    //hhihi
     if(list){
     setListing(list);
   }
