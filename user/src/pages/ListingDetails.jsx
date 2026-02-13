@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
 import {useSelector} from 'react-redux'
-import {ArrowLeftIcon, ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSign, Eye, LineChart, Loader2Icon, Users} from 'lucide-react'
+import {ArrowLeftIcon, ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSign, Eye, LineChart, Loader2Icon, MapPin, Users} from 'lucide-react'
 import { getProfileLink, platformIcons } from '../assets/assets'
 
 
@@ -47,6 +47,7 @@ const ListingDetails = () => {
     
 
       <div className='flex flex-start gap-10 max-md:flex-col'>
+        {/* ID details (left side)*/}
         <div className='flex-1 max-md:w-full'>
           
             {/*Top section */}
@@ -157,8 +158,66 @@ const ListingDetails = () => {
               </div>
             </div>
 
+            {/* Description*/}
+            <div className='border border-gray-200 rounded-2xl  bg-white mb-4'>
+              <div className='p-4 border-b border-gray-100'>
+                  <h4 className='text-gray-700 font-medium'>Description</h4>
+                  <div className='text-sm text-gray-600 p-4'>{listing.description}</div>
+              </div>
+            </div>
+
+            {/* Additional details*/}
+            <div className='border border-gray-200 rounded-2xl  bg-white mb-4'>
+              <div className='p-4 border-b border-gray-100'>
+                  <h4 className='text-gray-700 font-medium'>Addtional Details</h4>
+
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-6 p-4 text-sm'>
+                    <div>
+                      <p className='text-sm text-gray-500'>Niche</p>
+                      <p className='font-medium capitalize'>{listing.niche}</p>
+                    </div>
+
+                    <div>
+                      <p className='text-sm text-gray-500'>Primary Country</p>
+                      <p className='font-medium capitalize flex items-center '> <MapPin className='size-5 pr-1 text-gray-400'/>{listing.country}</p>
+                    </div>
+
+                    <div>
+                      <p className='text-sm text-gray-500'>Audience Age</p>
+                      <p className='font-medium capitalize'>{listing.age_range}years</p>
+                    </div>
+
+                    <div>
+                      <p className='text-sm text-gray-500'>Platform Verfied</p>
+                      <p className='font-medium capitalize'>{listing.platformAssured?"Yes":"No"}</p>
+                    </div>
+
+                    <div>
+                      <p className='text-sm text-gray-500'>Monetization</p>
+                      <p className='font-medium capitalize'>{listing.monetized?"Enabled":"Not Enabled"}</p>
+                    </div>
+
+                    <div>
+                      <p className='text-sm text-gray-500'>Status</p>
+                      <p className='font-medium capitalize'>{listing.status}</p>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
         </div>
-        <div></div>
+
+        {/* seller Details(right side)*/}
+        <div className='border bg-white border-gray-200 rounded-2xl p-4 min-h-30'>
+            <h4 className='font-medium'>Seller Information</h4>
+            <div className='flex items-center gap-2 mb-3'>
+                <img src={listing.owner?.image} alt="User image" className='size-10 rounded-full' />
+                <div>
+                  <p className='font-medium text-gray-800'>{listing.owner?.name}</p>
+                  <p className='text-sm text-gray-500'>{listing.owner?.email}</p>
+                </div>
+            </div>
+        </div>
       </div>
 
     </div>
