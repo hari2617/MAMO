@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
-import {useSelector} from 'react-redux'
-import {ArrowLeftIcon, ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSign, Eye, LineChart, Loader2Icon, MapPin, Users} from 'lucide-react'
+import {useDispatch, useSelector} from 'react-redux'
+import {ArrowLeftIcon, ArrowUpRightFromSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon, ChevronRightIcon, DollarSign, Eye, LineChart, Loader2Icon, MapPin, MessageSquareMoreIcon, ShoppingBagIcon, Users} from 'lucide-react'
 import { getProfileLink, platformIcons } from '../assets/assets'
+import { setChat } from '../app/features/chatSlice'
 
 
 const ListingDetails = () => {
+
+  const dispatch=useDispatch();
 
 
   const navigate=useNavigate();
@@ -16,6 +19,14 @@ const ListingDetails = () => {
   const{listings}=useSelector((state)=>state.listing)
   
   const {listingId}=useParams();
+
+  const purchaseAccount =async ()=>{
+
+  }
+
+  const loadChatBox = ()=>{
+      dispatch(setChat({listing:listing}))
+  }
 
   useEffect(()=>{
     const list=listings.find((listing)=>listing.id===listingId)
@@ -208,8 +219,8 @@ const ListingDetails = () => {
         </div>
 
         {/* seller Details(right side)*/}
-        <div className='border bg-white border-gray-200 rounded-2xl p-4 min-h-30'>
-            <h4 className='font-medium'>Seller Information</h4>
+        <div className='border bg-white border-gray-200 rounded-2xl p-5 min-w-full md:min-w-92.5 max-md:mb-10 self-start min-h-30'>
+            <h4 className='font-semibold text-gray-800 mb-3'>Seller Information</h4>
             <div className='flex items-center gap-2 mb-3'>
                 <img src={listing.owner?.image} alt="User image" className='size-10 rounded-full' />
                 <div>
@@ -217,7 +228,33 @@ const ListingDetails = () => {
                   <p className='text-sm text-gray-500'>{listing.owner?.email}</p>
                 </div>
             </div>
+
+            <div>
+              <p className='text-sm text-gray-500'>Member since <span className='text-gray-600'>{new Date(listing.owner?.createdAt).toLocaleDateString()}</span></p>
+            </div>
+
+            <button onClick={loadChatBox} className='bg-indigo-600 justify-center text-sm font-medium hover:bg-indigo-700 transition w-full flex items-center gap-1 mt-3 text-white py-3 rounded-xl '>
+              <MessageSquareMoreIcon className='size-5'/> Chat
+            </button>
+
+            {
+              listing.isCredentialChanged &&(
+                <button onClick={purchaseAccount} className='bg-purple-600 justify-center text-sm font-medium hover:bg-purple-700 transition w-full flex items-center gap-1 mt-3 text-white py-3 rounded-xl '>
+              <ShoppingBagIcon className='size-5'/> Purchase
+            </button>
+              )
+            }
         </div>
+      </div>
+
+      {/*Footer*/}
+
+      <div className='border-t border-gray-200 text-center mt-28 bg-white p-4'>
+
+        <p className='text-sm text-gray-500'>
+          © 2026 <span className='text-indigo-500'>Profile marketplace</span> All rights reserved.
+        </p>
+
       </div>
 
     </div>
