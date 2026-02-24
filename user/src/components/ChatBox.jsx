@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { dummyChats } from '../assets/assets';
 import { Loader2Icon, X } from 'lucide-react';
@@ -27,9 +27,27 @@ const fetchChat=async ()=>{
 
 useEffect(()=>{
     if(listing){
-        fetchChat()
+        fetchChat();
+        
     }
 },[listing])
+
+useEffect(()=>{
+    setChat(null);
+    setMessages([]);
+    setNewMessages("");
+    setIsLoading(true);
+    setIsSending(false);
+
+},[isOpen])
+
+
+//----- for auto scroll to end of messages -----
+const messagesEndRef =useRef(null);
+
+useEffect(()=>{
+    messagesEndRef.current?.scrollIntoView({behavior:"smooth"})
+},[messages.length])
 
 if(!listing || !isOpen) return null;
 
@@ -49,7 +67,7 @@ if(!listing || !isOpen) return null;
                     </button>
             </div>
 
-             {/*Message are*/}
+             {/*Message area*/}
 
              <div className='flex-1 space-y-4 overflow-y-auto p-4 bg-gray-100'>
                     {
@@ -80,7 +98,13 @@ if(!listing || !isOpen) return null;
                             
                         )
                     }
+                    <div ref={messagesEndRef}/>
              </div>
+                
+            {/*input area*/}
+            <div>
+                
+            </div>
 
         </div>
 
