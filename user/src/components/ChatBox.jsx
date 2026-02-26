@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { dummyChats } from '../assets/assets';
-import { Loader2Icon, X } from 'lucide-react';
+import { Loader2Icon, Send, X } from 'lucide-react';
 import { clearChat } from '../app/features/chatSlice';
 import {format} from 'date-fns'
 
@@ -33,11 +33,13 @@ useEffect(()=>{
 },[listing])
 
 useEffect(()=>{
-    setChat(null);
+   if(!isOpen){
+     setChat(null);
     setMessages([]);
     setNewMessages("");
     setIsLoading(true);
     setIsSending(false);
+   }
 
 },[isOpen])
 
@@ -50,6 +52,14 @@ useEffect(()=>{
 },[messages.length])
 
 if(!listing || !isOpen) return null;
+
+const handleSendMessage =(e)=>{
+        e.preventDefault();
+        if(!newMessages.trim() || isSending) return;
+        setMessages([...messages,{id:Date.now(),chatId:chat.id,sender_id:user.id,
+            message:newMessages,createdAt:new Date()}])
+        setNewMessages("");
+}
 
 
   return (
@@ -102,9 +112,27 @@ if(!listing || !isOpen) return null;
              </div>
                 
             {/*input area*/}
-            <div>
-                
-            </div>
+            <form onSubmit={handleSendMessage} className='p-4 bg-white border-t border-gray-200 rounded-b-lg'>
+                <div className='flex items-end space-x-2'>
+                    <textarea 
+                    value={newMessages}
+                    onChange={(e)=>setNewMessages(e.target.value)}
+                    onKeyDown={(e)=>{
+                        if(e.key=="Enter" && !e.shiftKey){
+                            e.preventDefault();
+                            handleSendMessage(e);
+                        }
+                    }}
+                    placeholder='Type your message...' className='flex-1 resize-none border
+                     border-gray-300 px-4 py-2 rounded-lg focus:outline-indigo-500 max-h-32'/>
+
+                     <button disabled={!newMessages.trim() || isSending} type='submit' className='bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded-lg disabled:opacity-50 transition-colors'>
+                        {
+                            isSending?<Loader2Icon className='size-4 animate-spin'/>:<Send className='size-4'/>
+                        }
+                     </button>
+                </div>
+            </form>
 
         </div>
 
