@@ -1,13 +1,23 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { dummyChats } from '../assets/assets';
 import { MessageCircle, Search } from 'lucide-react';
-
+import {format,isToday,isYesterday,parseISO } from 'date-fns'
+import { useDispatch } from 'react-redux';
+import { setChat } from '../app/features/chatSlice';
 
 const Messages = () => {
+
+  const dispatch=useDispatch();
+
+  const user={id:"user_1"};
 
   const [chats,setChats] =useState([]);
   const [searchQuery,setSearchQuery] =useState("");
   const [loading,setLoading] =useState(true);
+
+  const handleOpenChat =(chat)=>{
+    dispatch(setChat({listing:chat.listing,chatId:chat.id}))
+  }
 
   const fetchChats =async ()=>{
     setChats(dummyChats);
@@ -23,7 +33,34 @@ const Messages = () => {
     return()=>clearInterval(interval);
   },[])
 
+  const formatTime=(dateString)=>{
+    if(!dateString) return;
 
+    const date=parseISO(dateString);
+
+    if(isToday(date)){
+      return 'Today '+format(date,"HH:mm");
+    }
+
+    if(isYesterday(date)){
+      return 'Yestarday '+format(date,"HH:mm");
+    }
+
+    return format(date,"MMM d");
+
+  }
+
+  const filteredChats =useMemo(()=>{
+    const query=searchQuery.toLowerCase();
+    return chats.filter((chat)=>{
+      const chatUser=chat.chatUserId===user?.id ? chat?.ownerUser : chat.chatUser;
+
+       return chat.listing?.title?.toLowerCase().includes(query) || 
+      chatUser?.name?.toLowerCase().includes(query);
+    
+    })
+
+  },[chats,searchQuery])
 
   return (
     <div className='mx-auto min-h-screen px-6 md:px-16 lg:px-24 xl:px-32'>
@@ -47,14 +84,52 @@ const Messages = () => {
             <div className='text-center text-gray-500 py-20'>
               Loading messages.....
             </div>
-          ): chats.length===0?(
+          ): filteredChats.length===0?(
             <div className='bg-white p-14 border border-gray-200 rounded-2xl shadow-xs text-center'>
               <div className='w-16 h-16 flex items-center justify-center rounded-full bg-gray-100 mx-auto mb-4'>
                   <MessageCircle className='w-8 h-8 text-gray-400'/> 
               </div>
               <h3 className='text-xl font-medium mb-3 text-gray-800'>{searchQuery?'No Chats Found':'No Messages Yet'}</h3>
+              <p className='text-gray-600'>
+                {searchQuery?" Try different search":" start the conversation with seller or buyer"}
+              </p>
             </div>
-          ):()}
+          ):(
+            <div className='bg-white rounded-lg shadow-xs border border-gray-200 divide-y divide-gray-200'>
+                {
+                  filteredChats.map((chat)=>{
+                    const chatUser=chat.chatUserId===user?.id? chat.ownerUser : chat.chatUser;
+
+                    return (
+                      <button key={chat.id} onClick={()=> handleOpenChat(chat)} className='w-full p-4 mb-3 hover:bg-gray-50 transition-colors
+                       text-left'>
+                        <div className='flex items-start space-x-4'>
+
+                          <div className='flex-shrink-0'>
+                            <img src={chatUser?.image} alt={chat?.chatUser?.name} 
+                              className='w-12 h-12 rounded-lg object-cover'/>
+                          </div>
+
+                          <div className='flex-1 min-w-0'>
+                              <div className='flex items-center justify-between mb-1'>
+                                  <h3 className='font-semibold text-gray-8 00 truncate'>{chat?.listing?.title}</h3>
+                                  <span className='text-xs text-gray-500 flex-shrink-0 ml-2'>{formatTime(chat.updatedAt)}</span>
+                              </div>
+
+                              <p className='text-sm text-gray-500 truncate mb-1'>{chatUser?.name}</p>
+                              <p className='text-xs text-gray-600 mb-1 truncate'>{chat.lastMessage || "No messages yet"}</p>
+                          </div>
+
+                        </div>
+
+                       
+
+                      </button>
+                    )
+                  })
+                }
+            </div>
+          )}
 
         </div>
     </div>
