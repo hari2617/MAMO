@@ -1,4 +1,4 @@
-import { CheckCircle, DollarSign, Eye, Plus, TrendingUp } from 'lucide-react';
+import { ArrowDownCircleIcon, CheckCircle, CoinsIcon, DollarSign, Eye, Plus, TrendingUp, WalletIcon } from 'lucide-react';
 import React from 'react'
 import { useSelector } from 'react-redux'
 import {useNavigate} from 'react-router-dom'
@@ -34,9 +34,51 @@ const MyListings = () => {
         <StatCard title='Total Listing' value={userListings.length} icon={<Eye className='size-6 text-indigo-600'/>} color='indigo'/>
         <StatCard title='Active Listing' value={activeListings} icon={<CheckCircle className='size-6 text-green-600'/>} color='green'/>
         <StatCard title='Sold' value={soldListings} icon={<TrendingUp className='size-6 text-indigo-600'/>} color='indigo'/>
-        <StatCard title='Total Vakue' value={soldListings} icon={<DollarSign className='size-6 text-yellow-600'/>} color='yellow'/>      
+        <StatCard title='Total Value' value={`$${soldListings}`} icon={<DollarSign className='size-6 text-yellow-600'/>} color='yellow'/>      
       </div>
         
+
+      {/*Balance sheet*/}
+      <div className='flex flex-col sm:flex-row mb-10 xl:gap-20 gap-4 border border-gray-200 p-6 justify-between bg-white rounded-xl'>
+
+        {
+          [ {label:'Earned',value:balance.earned,icon:WalletIcon},
+            {label:'Withdrawn',value:balance.withdrawn,icon:ArrowDownCircleIcon},
+            {label:'Available',value:balance.available,icon:CoinsIcon}
+          ].map((item,index)=>(
+            <div key={index} className='border rounded-xl border-gray-100 flex-1 p-4 flex justify-between items-center cursor-pointer'>
+              <div className='flex items-center gap-3'>
+                  <item.icon className='text-gray-500 w-6 h-6'/>
+                  <p className='text-md font-medium text-gray-600'>{item.label}</p>
+              </div>
+
+              <span className='font-semibold text-xl text-gray-800'>
+                ${item.value.toFixed(2)}
+              </span>
+            </div>
+          ))
+        }
+      </div>
+
+      {/*Listings*/}
+      {
+        userListings.length===0?
+        (
+          <div className='border border-gray-200 rounded-lg p-16 text-center '>
+              <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                  <Plus className='size-8 text-gray-400'/>
+              </div>
+              <h3 className='text-xl font-medium mb-2 text-gray-800'>No Listings Yet</h3> 
+              <p className='mb-5 text-gray-600 text-md'>start by creating your first listing</p>
+              <button onClick={()=>navigate('/create-listing')} className='rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2'>Create First Listing</button>
+          </div>
+        ):
+        (
+          <div>
+
+          </div>
+        )
+      }
     </div>
   )
 }
