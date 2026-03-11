@@ -1,8 +1,10 @@
-import { ArrowDownCircleIcon, CheckCircle, CoinsIcon, DollarSign, Eye, Plus, TrendingUp, WalletIcon } from 'lucide-react';
+import { ArrowDownCircleIcon, CheckCircle, CoinsIcon, DollarSign, Eye, Plus, StarIcon, TrendingUp, WalletIcon } from 'lucide-react';
 import React from 'react'
 import { useSelector } from 'react-redux'
 import {useNavigate} from 'react-router-dom'
 import StatCard from '../components/StatCard';
+import { platformIcons } from '../assets/assets';
+
 
 const MyListings = () => {
 
@@ -74,7 +76,32 @@ const MyListings = () => {
           </div>
         ):
         (
-          <div>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+
+            {
+              userListings.map((listing)=>(
+                <div key={listing.id} className='bg-white border border-gray-200 rounded-lg hover:shadow-lg shadow-gray-200/70 transition-shadow'>
+                    <div className='p-6'>
+                        <div className='flex items-start justify-between gap-4 mb-4'>
+                            {platformIcons[listing.platform]}
+                            <div className='flex-1'>
+                                <div className='flex justify-between  items-start'>
+                                  <h3 className='text-lg font-semibold text-gray-800'>{listing.title}</h3>
+                                  <div className='flex items-center gap-2'>
+                                        <div></div>
+                                        {listing.status==='active'&&(
+                                          <StarIcon size={18} className={`text-yellow-500 cursor-pointer ${listing.featured&&"fill-yellow-500"}`}/>
+                                        )}
+                                  </div>
+                                </div>
+
+                                <p className='text-sm text-gray-500'>@{listing.username}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              ))
+            }
 
           </div>
         )
