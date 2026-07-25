@@ -11,12 +11,17 @@ import Loading from './pages/Loading'
 import Home from './pages/Home'
 import Navbar from './components/Navbar'
 import ChatBox from './components/ChatBox'
+import LoginPage from './pages/LoginPage'
+import SignInPage from './pages/SignInPage'
+
+
+
 
 const App = () => {
   const {pathname}=useLocation();
   return (
     <div>
-      {!pathname.includes('/admin')&&<Navbar/>}
+      {!pathname.includes('/signin',) && !pathname.includes('/login') && !pathname.includes('/admin') &&<Navbar/>}
       <Routes>
         <Route path='/' element={<Home/>}/>
         <Route path='/marketplace' element={<MarketPlace/>}/>
@@ -27,6 +32,8 @@ const App = () => {
         <Route path='/messages' element={<Messages/>}/>
         <Route path='/my-orders' element={<MyOrders/>}/>
         <Route path='/loading' element={<Loading/>}/>
+        <Route path='/login' element={<LoginPage/>}/>
+        <Route path='/signin' element={<SignInPage/>}/>
       </Routes>
 
       <ChatBox/>

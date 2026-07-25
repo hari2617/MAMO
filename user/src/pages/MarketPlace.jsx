@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {ArrowLeftIcon,FilterIcon} from 'lucide-react'
 import {useSelector} from 'react-redux'
 import ListingCard from '../components/ListingCard';
 import FilterSideBar from '../components/FilterSideBar';
+import { AuthContext } from '../context/AuthContext';
+
 
 const MarketPlace = () => {
 
@@ -64,7 +66,26 @@ const MarketPlace = () => {
 
   })
   const navigate=useNavigate()
+
+  //Auth checker
+  const {user,loading} = useContext(AuthContext);
+
+  useEffect(()=>{
+    if(!user && !loading){
+      navigate('/signin')
+    }
+  },[user,loading])
+
+  if(loading){
+      return <div>Loading</div>
+    }
+
+
+
   return (
+
+    
+
     <div className='px-7 md:px-16  lg:px-24 xl:px-32' >
        <div className='flex justify-between items-center text-gray-500'>
         <button onClick={()=> navigate('/')} className='flex gap-1 items-center py-5'>

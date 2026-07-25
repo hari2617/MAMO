@@ -11,8 +11,7 @@ const Home = () => {
     <div>
         <Hero />
         <Listing />
-        <Plans />
-        <Cta /> 
+
         <Footer />
     </div>
   )
