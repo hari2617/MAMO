@@ -1,13 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {ArrowLeftIcon,FilterIcon} from 'lucide-react'
-import {useSelector} from 'react-redux'
+import { useSelector} from 'react-redux'
 import ListingCard from '../components/ListingCard';
 import FilterSideBar from '../components/FilterSideBar';
 import { AuthContext } from '../context/AuthContext';
 
 
+
+
 const MarketPlace = () => {
+
+
 
   const[searchParams]=useSearchParams();
   const search=searchParams.get("search");
@@ -80,7 +84,7 @@ const MarketPlace = () => {
       return <div>Loading</div>
     }
 
-
+    console.log(listings)
 
   return (
 

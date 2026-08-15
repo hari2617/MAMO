@@ -81,7 +81,7 @@ const navigate=useNavigate();
               </div>
 
               <div >
-                <button className="bg-blue-600 text-white rounded-2xl p-3 px-4 text-sm"  onClick={()=> {navigate(`/listings/${listing.id}`); scrollTo(0,0) } }>More Details</button>
+                <button className="bg-blue-600 text-white rounded-2xl p-3 px-4 text-sm"  onClick={()=> {navigate(`/listings/${listing._id}`); scrollTo(0,0) } }>More Details</button>
               </div>
           </div>
 

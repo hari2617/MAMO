@@ -4,21 +4,26 @@ import cors from 'cors'
 import session from 'express-session'
 import bcrypt from 'bcrypt'
 import { User } from './Schema/userSchema.js';
-import multer from "multer";
 import mongoose from 'mongoose';
+import { v2 as cloudinary } from "cloudinary"; //imge file to link 
+import { Listing } from "./Schema/userListings.js";
+import dotenv from "dotenv";
+import upload from './middleware/upload.js';
 
+import fs from "fs";
 
 
 
 
 const app = express()
 app.use(cors({
-    origin: "http://localhost:5173", // React frontend URL
-    credentials: true,               // Allow cookies
-  }))
+    origin: "http://localhost:5173",
+    credentials: true
+}));
+app.use(express.json())
 
 app.use(session({
-    secret:"ayyapp",
+    secret:"ayyappa",
     resave:false,
     saveUninitialized:false,
     cookie:{
@@ -29,7 +34,6 @@ app.use(session({
 
 }))
 
-app.use(express.json())
 
 const PORT = 7000;
 app.listen(PORT,()=>{
@@ -43,23 +47,16 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log(err));
 
+/* -------------------- converting image file to link -------------------- */
 
-
-/* -------------------- MULTER(image) -------------------- */
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
+dotenv.config();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const upload = multer({ storage });
-
-/* --------------------------------------- */
+/* -------------------- -------------------- */
 
 app.get('/',(req,res)=>{
     res.send("hello")
@@ -125,14 +122,23 @@ app.post('/api/loginDetails',async(req,res)=>{
             return res.status(401).send("invalid credentials")
         }
 
+        console.log("BEFORE:", req.session);
+
         req.session.user = {
             id: findUser._id,
             name: findUser.name,
             email: findUser.email,
             profImage: findUser.profImage
         };
+
         req.session.login = true
-        res.send(findUser)
+            console.log("LOGIN SESSION ID:", req.sessionID);
+    console.log("LOGIN USER:", req.session.user);
+        console.log("AFTER:", req.session.user);
+
+        
+
+        res.send( req.session.user)
         
         
     }
@@ -140,5 +146,86 @@ app.post('/api/loginDetails',async(req,res)=>{
         console.log(err);
     }
     
+
+})
+
+//                          this (upload) is multer middleware(used to handle multitype data like file and json )here we have images as file and others as json 
+//so we need multer to convert images as req.files, and others as req.body
+app.post("/api/postListings",upload.array("images",10),async (req, res) => {
+   
+  //console.log(req.body)  other details
+  //console.log(req.files)  image files
+
+  /* converting the images files to cloud link   */
+  //cloudinary takes the images host in cloud and give the link
+  const imageLinks = await Promise.all(
+  req.files.map(async (file) => {
+    const result = await cloudinary.uploader.upload(file.path, {
+    folder: "MAMO/listings",
+    });
+
+    fs.unlinkSync(file.path); // delete local file
+
+    return result.secure_url;
+  })
+);
+
+console.log(imageLinks);
+
+
+     
+  try{
+      const listing = await Listing.create({
+        ownerId: req.session.user.id  ,
+        title: req.body.title,
+        platform: req.body.platform,
+        username: req.body.username,
+        followers_count: req.body.followersCount,
+        engagement_rate: req.body.engagementRate,
+        monthly_views: req.body.monthlyViews,
+        niche: req.body.niche,
+        price: req.body.price,
+        description: req.body.description,
+        country: req.body.country,
+        ageRange: req.body.ageRange,
+        monetized: req.body.monetized,
+        images:imageLinks
+      });
+
+      console.log("listing sent to DB")
+
+      res.status(201).json({
+        message: "Listing received and sent to DB",
+
+      });
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "Image upload failed",
+      });
+    }
+  }
+);
+
+
+
+app.get("/api/getListings", async(req,res)=>{
+    
+  try{
+    const allListings = await Listing.find()
+
+    if(allListings.length>0){
+      return res.status(200).send(allListings)
+    }
+    else{
+      return res.status(404).send("NO LISTINGS FOUND")
+    }
+
+  }
+  catch(err){
+    console.log(err)
+  }
 
 })

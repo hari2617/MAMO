@@ -4,7 +4,7 @@ import {dummyListings} from '../../assets/assets'
 const listingSlice =createSlice({
     name:"listing",
     initialState:{
-        listings:dummyListings,
+        listings:[],
         userListings:dummyListings,
         balance:{
             earned:0,

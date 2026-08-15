@@ -20,6 +20,7 @@ const ListingDetails = () => {
   
   const {listingId}=useParams();
 
+
   const purchaseAccount =async ()=>{
 
   }
@@ -29,11 +30,12 @@ const ListingDetails = () => {
   }
 
   useEffect(()=>{
-    const list=listings.find((listing)=>listing.id===listingId)
-
+    const list=listings.find((listing)=>listing._id===listingId)
+    console.log(list)
     //hhihi
     if(list){
     setListing(list);
+    
   }
   },[listingId,listings])
 
