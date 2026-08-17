@@ -3,13 +3,23 @@ import logo from "../assets/logo-mamo.png";
 import { Link, useNavigate } from 'react-router-dom';
 import {BoxIcon, GripIcon,ListIcon,MessageCircleMoreIcon} from 'lucide-react'
 import { AuthContext } from '../context/AuthContext';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 
 
 const Navbar = () => {
 
     const navigate=useNavigate()
-    const {user} = useContext(AuthContext)
+    
+    const {user} =useContext(AuthContext)
+    const [curruser,setCurruser] = useState()
+
+    useEffect(()=>{
+
+        setCurruser(user)
+
+    },[user])
 
     const [menuOpen, setMenuOpen] = React.useState(false)
   return (
@@ -34,9 +44,9 @@ const Navbar = () => {
                     }
 
                     {
-                        user && (
+                        curruser && (
                             <img
-                                src={`http://localhost:7000/uploads/${user.profImage}`}
+                                src={`http://localhost:7000/uploads/${curruser.profImage}`}
                                 alt="Profile"
 
                                 className='rounded-full size-11 cursor-pointer'

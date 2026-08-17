@@ -192,12 +192,11 @@ console.log(imageLinks);
         images:imageLinks
       });
 
+      const allListing=await Listing.find()
+
       console.log("listing sent to DB")
 
-      res.status(201).json({
-        message: "Listing received and sent to DB",
-
-      });
+      res.status(201).send(allListing);
 
     } catch (error) {
       console.error(error);
@@ -215,6 +214,7 @@ app.get("/api/getListings", async(req,res)=>{
     
   try{
     const allListings = await Listing.find()
+    console.log(allListings)
 
     if(allListings.length>0){
       return res.status(200).send(allListings)
@@ -226,6 +226,116 @@ app.get("/api/getListings", async(req,res)=>{
   }
   catch(err){
     console.log(err)
+    res.status(500).send(err)
   }
 
 })
+
+
+
+app.delete('/api/deleteListing',async(req,res)=>{
+  const {id}=req.body
+
+  try{
+    const result=await Listing.deleteOne({_id:id})
+    console.log("success",result)
+    const allList=await User.find()
+    res.status(200).send(allList)
+  }
+  catch(err){
+    console.log(err)
+    res.status(500).send(err)
+  }
+})
+
+
+app.get("/api/getListings/:id", async(req,res)=>{
+    
+  try{
+  const listing = await Listing.findById(req.params.id)   
+  console.log(listing)
+
+    if(listing){
+      return res.status(200).send(listing)
+    }
+    else{
+      return res.status(404).send("LISTING NOT FOUND")
+    }
+
+  }
+  catch(err){
+    console.log(err)
+      res.status(500).send(err)
+
+  }
+
+})
+
+
+app.put("/api/editListing/:id",upload.array("images",10),async (req, res) => {
+   
+  const id = req.params.id
+
+  const list = await Listing.findById(id)
+
+  if(!list){
+    req.status(404).send("List not found")
+  }
+
+  letmimageLInks=list.images
+
+  if(req.file && req.file>0){
+    
+  }
+  //cloudinary takes the images host in cloud and give the link
+  const imageLinks = await Promise.all(
+  req.files.map(async (file) => {
+    const result = await cloudinary.uploader.upload(file.path, {
+    folder: "MAMO/listings",
+    });
+
+    fs.unlinkSync(file.path); // delete local file
+
+    return result.secure_url;
+  })
+);
+
+console.log(imageLinks);
+
+
+     
+  try{
+      const listing = await Listing.create({
+        ownerId: req.session.user.id  ,
+        title: req.body.title,
+        platform: req.body.platform,
+        username: req.body.username,
+        followers_count: req.body.followersCount,
+        engagement_rate: req.body.engagementRate,
+        monthly_views: req.body.monthlyViews,
+        niche: req.body.niche,
+        price: req.body.price,
+        description: req.body.description,
+        country: req.body.country,
+        ageRange: req.body.ageRange,
+        monetized: req.body.monetized,
+        images:imageLinks
+      });
+
+      const allListing=await Listing.find()
+
+      console.log("listing sent to DB")
+
+      res.status(201).send(allListing);
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "Image upload failed",
+      });
+    }
+  }
+);
+
+

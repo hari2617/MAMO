@@ -1,22 +1,75 @@
 import { ArrowDownCircleIcon, BanIcon, CheckCircle, Clock, CoinsIcon, DollarSign, Edit, Eye, EyeOffIcon, LockIcon, Plus, StarIcon, TrashIcon, TrendingUp, Users, WalletIcon, XCircle } from 'lucide-react';
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useContext, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import {useNavigate} from 'react-router-dom'
 import StatCard from '../components/StatCard';
 import { platformIcons } from '../assets/assets';
+import { AuthContext } from '../context/AuthContext';
+import axios from 'axios';
+
+
+import { useEffect } from 'react';
+
+
 
 
 const MyListings = () => {
 
-  const {userListings,balance} =useSelector((state)=>state.listing);
+  const dispatch = useDispatch()
+
+ const [userListings,setUserListings] = useState([])
+  useEffect(()=>{
+     const fetchData = async()=>{
+            const res=await axios.get('http://localhost:7000/api/getListings',{withCredentials:true})
+            setUserListings(res.data)
+          }
+
+          fetchData()
+  },[])
+
+ 
+  
+  const {balance} =useSelector((state)=>state.listing);
+
+
+
+ 
+ 
+  
+  const {user} =useContext(AuthContext)
+
+  const deleteListing = async (id)=>{
+
+    const Listingid = {"id":id}
+
+    try{
+      const res = axios.delete('http://localhost:7000/api/deleteLIsting',{data:Listingid,withCredentials: true,})
+
+      dispatch(
+      setUserListings(
+        userListings.filter(listing => listing._id !== id)
+      )
+    );
+
+      console.log("deleted successfully")
+    }
+    catch(err){
+      console.log(err)
+    }
+
+
+
+  }
+  
+  const userListing = userListings.filter((listing)=>user.id==listing.ownerId)
   const navigate=useNavigate();
 
   const [showCredentialSubmission,setShowCredentialSubmission]=useState(null);
   const [showWithdrawal,setShowWithdrawal]=useState(null);
 
-  const totalValue = userListings.reduce((sum,listing)=>sum+(listing.price || 0),0)
-  const activeListings = userListings.filter((listing)=>listing.status==='active').length
-  const soldListings = userListings.filter((listing)=>listing.status==='sold').length;
+  const totalValue = userListing.reduce((sum,listing)=>sum+(listing.price || 0),0)
+  const activeListings = userListing.filter((listing)=>listing.status==='active').length
+  const soldListings = userListing.filter((listing)=>listing.status==='sold').length;
 
   {/* convert number to symbol (M,K) */}
   const numberConverter=(num)=>{
@@ -68,10 +121,6 @@ const MyListings = () => {
     }
   }
 
-  const toggleStatus=async (listingId)=>{}
-  const deleteListing=async (listingId)=>{}
-  const markAsFeatured=async (listingId)=>{}
-
 
   return (
     <div className='px-4 md:px-16 lg:px-24 xl:px-32 pt-8'>
@@ -91,7 +140,7 @@ const MyListings = () => {
       
       {/*stats*/}
       <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
-        <StatCard title='Total Listing' value={userListings.length} icon={<Eye className='size-6 text-indigo-600'/>} color='indigo'/>
+        <StatCard title='Total Listing' value={userListing.length} icon={<Eye className='size-6 text-indigo-600'/>} color='indigo'/>
         <StatCard title='Active Listing' value={activeListings} icon={<CheckCircle className='size-6 text-green-600'/>} color='green'/>
         <StatCard title='Sold' value={soldListings} icon={<TrendingUp className='size-6 text-indigo-600'/>} color='indigo'/>
         <StatCard title='Total Value' value={`$${soldListings}`} icon={<DollarSign className='size-6 text-yellow-600'/>} color='yellow'/>      
@@ -122,7 +171,7 @@ const MyListings = () => {
 
       {/*Listings*/}
       {
-        userListings.length===0?
+        userListing.length===0?
         (
           <div className='border border-gray-200 rounded-lg p-16 text-center '>
               <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'>
@@ -137,25 +186,25 @@ const MyListings = () => {
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
 
             {
-              userListings.map((listing)=>(
+              userListing.map((listing)=>(
                 <div key={listing.id} className='bg-white border border-gray-200 rounded-lg hover:shadow-lg shadow-gray-200/70 transition-shadow'>
                     <div className='p-6'>
-                        <div className='flex items-start justify-between gap-4 mb-4'>
-                            {platformIcons[listing.platform]}
-                            <div className='flex-1'>
-                                <div className='flex justify-between  items-start'>
-                                  <h3 className='text-md font-semibold text-gray-800'>{listing.title}</h3>
-                                  <div className='flex items-center gap-3'>
-                                        <div className='relative group'>
-                                            <LockIcon size={14}/>
-                                            <div className='invisible group-hover:visible absolute right-0 top-0 pt-4.5 z-10'>
-                                                <div className='bg-white text-gray-600 text-xs rounded border border-gray-200 p-2 px-3'>
-                                                    {!listing.isCredentialSubmitted &&(
-                                                      <>
-                                                      <button>Add credentials</button>
-                                                      <hr className='border-gray-200 my-2'/>
-                                                      </>
-                                                    )}
+                          <div className='flex items-start justify-between gap-4 mb-4'>
+                              {platformIcons[listing.platform]}
+                              <div className='flex-1'>
+                                  <div className='flex justify-between  items-start'>
+                                    <h3 className='text-md font-semibold max-w-[220px] line-clamp-2 break-words text-gray-800'>{listing.title}</h3>
+                                    <div className='flex items-center gap-3'>
+                                          <div className='relative group'>
+                                              <LockIcon size={14}/>
+                                              <div className='invisible group-hover:visible absolute right-0 top-0 pt-4.5 z-10'>
+                                                  <div className='bg-white text-gray-600 text-xs rounded border border-gray-200 p-2 px-3'>
+                                                      {!listing.isCredentialSubmitted &&(
+                                                        <>
+                                                        <button>Add credentials</button>
+                                                        <hr className='border-gray-200 my-2'/>
+                                                        </>
+                                                      )}
 
                                                     <button className='text-nowrap'>
                                                       status:{" "}
@@ -183,7 +232,7 @@ const MyListings = () => {
                           <div className='grid grid-cols-2 gap=2 text-sm'>
                               <div className='flex items-center gap-2 space-x-2'>
                                 <Users className='size-4 text-gray-400'/>
-                                <span c>{numberConverter(listing.followers_count)}{" "}followers</span>
+                                <span >{numberConverter(listing.followers_count)}{" "}followers</span>
                               </div> 
 
                               <span className={`flex items-center justify-end gap-1 ${getStatusColor(listing.status)}`}>
@@ -205,13 +254,13 @@ const MyListings = () => {
                               <div className='flex items-center space-x-2'>
                                   {
                                     listing.status!=="sold"&&(
-                                      <button onClick={()=>deleteListing(listing.id)} className='border border-gray-300 rounded-lg p-2 hover:bg-gray-50 hover:text-red-500'>
+                                      <button onClick={()=>deleteListing(listing._id)} className='border border-gray-300 rounded-lg p-2 hover:bg-gray-50 hover:text-red-500'>
                                         <TrashIcon className='size-4'/>
                                       </button>
                                     )
                                   }
 
-                                  <button onClick={()=>navigate(`/edit-lisintg/${listing.id}`)} className='border border-gray-300 rounded-lg p-2 hover:bg-gray-50 hover:text-indigo-600'>
+                                  <button onClick={()=>navigate(`/edit-listing/${listing._id}`)} className='border border-gray-300 rounded-lg p-2 hover:bg-gray-50 hover:text-indigo-600'>
                                     <Edit className='size-4'/>
                                   </button>
 

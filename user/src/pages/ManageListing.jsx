@@ -1,5 +1,10 @@
 import { useState } from "react";
 import axios from "axios"
+import { useDispatch } from "react-redux";
+import { setListings, setUserListings } from "../app/features/listingSlice";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+
 
 const ManageListing = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +23,17 @@ const ManageListing = () => {
     image:[],
   });
 
+    const {id:paramsId} = useParams()
+    console.log(paramsId)
+   useEffect(()=>{
+    if(!paramsId) return;
+            const fetchData = async()=>{
+              const res=await axios.get(`http://localhost:7000/api/getListings/${paramsId}`,{withCredentials:true})
+              setFormData(res.data)
+            }
+  
+            fetchData()
+    },[paramsId])
   
 
   const handleChange = (e) => {
@@ -41,7 +57,6 @@ const ManageListing = () => {
   const handleSubmit = async(e) => {
     e.preventDefault();
 
-    console.log(formData);
 
     const data = new FormData();
 
@@ -62,30 +77,46 @@ const ManageListing = () => {
       data.append("images", file);
     });
 
-    try{
-      const res = await axios.post("http://localhost:7000/api/postListings",data,{withCredentials: true,})
-      console.log(res);
+    if(!paramsId){
+      try{
 
-    }catch(err){
-      console.log(err)
+      const res = await axios.post("http://localhost:7000/api/postListings",data,{withCredentials: true,})
+        setListings(res.data)
+        setUserListings(res.data)
+
+        console.log(res)
+
+      }catch(err){
+        console.log(err)
+      }
+    }else{
+      try{
+        const res = await axios.put("http://localhost:7000/api/postListings",data,{withCredentials: true,})
+        setListings(res.data)
+        setUserListings(res.data)
+        console.log(res)
+
+      }catch(err){
+        console.log(err)
+      }
     }
 
-    console.log("Listing sent to server")
-  //   setFormData({
-  //   title: "",
-  //   platform: "",
-  //   username: "",
-  //   followersCount: "",
-  //   engagementRate: "",
-  //   monthlyViews: "",
-  //   niche: "",
-  //   price: "",
-  //   description: "",
-  //   country: "",
-  //   ageRange: "",
-  //   monetized: false,
-  //   image:[],
-  // })
+    //console.log("Listing sent to server")
+    setFormData({
+    title: "",
+    platform: "",
+    username: "",
+    followersCount: "",
+    engagementRate: "",
+    monthlyViews: "",
+    niche: "",
+    price: "",
+    description: "",
+    country: "",
+    ageRange: "",
+    monetized: false,
+    image:[],
+  })
   };
 
   return (

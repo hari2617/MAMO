@@ -29,7 +29,7 @@ const handleLogin = async (e)=>{
             const res = await axios.post("http://localhost:7000/api/loginDetails",{email,pass},{withCredentials: true,})
             console.log(res)
             
-                setUser(res)
+                setUser(res.data)
                 navigate('/')
             
         }

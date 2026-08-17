@@ -5,7 +5,7 @@ const listingSlice =createSlice({
     name:"listing",
     initialState:{
         listings:[],
-        userListings:dummyListings,
+        userListings:[],
         balance:{
             earned:0,
             withdrawn:0,
@@ -15,11 +15,14 @@ const listingSlice =createSlice({
     reducers:{
         setListings:(state,action)=>{
             state.listings=action.payload
+        },
+        setUserListings:(state,action)=>{
+            state.userListings=action.payload
         }
     }
 }
 )
 
 
-export const {setListings}=listingSlice.actions
+export const {setListings,setUserListings}=listingSlice.actions
 export default listingSlice.reducer

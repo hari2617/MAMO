@@ -5,6 +5,7 @@ import { useSelector} from 'react-redux'
 import ListingCard from '../components/ListingCard';
 import FilterSideBar from '../components/FilterSideBar';
 import { AuthContext } from '../context/AuthContext';
+import axios from 'axios';
 
 
 
@@ -16,7 +17,19 @@ const MarketPlace = () => {
   const[searchParams]=useSearchParams();
   const search=searchParams.get("search");
 
-   const {listings } =useSelector(state=> state.listing)
+  const [listings,setListing]=useState([])
+
+      useEffect(()=>{
+          const fetchData = async()=>{
+            const res=await axios.get('http://localhost:7000/api/getListings',{withCredentials:true})
+            setListing(res.data)
+          }
+
+          fetchData()
+      },[])
+  
+
+   //console.log(listings)
    const [mobileScreen,setMobileScreen]=useState(false)
 
    const [filters,setFilters]=useState({
@@ -84,7 +97,8 @@ const MarketPlace = () => {
       return <div>Loading</div>
     }
 
-    console.log(listings)
+
+
 
   return (
 
